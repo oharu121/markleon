@@ -1,0 +1,93 @@
+{
+  "name": "markleon",
+  "displayName": "Markleon",
+  "description": "Live, server-less markdown preview that toggles between blog-provider rendering flavors (Zenn and Qiita).",
+  "version": "0.1.0",
+  "publisher": "oharu121",
+  "license": "MIT",
+  "main": "./out/extension.js",
+  "engines": {
+    "node": ">=22.0.0",
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [],
+  "contributes": {
+    "commands": [
+      {
+        "command": "markleon.showPreview",
+        "title": "Markleon: Open Preview",
+        "icon": "$(open-preview)"
+      },
+      {
+        "command": "markleon.toggleProvider",
+        "title": "Markleon: Switch Provider"
+      },
+      {
+        "command": "markleon.insertNote",
+        "title": "Markleon: Insert Note Block"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "markleon.showPreview",
+        "key": "ctrl+shift+v",
+        "mac": "cmd+shift+v",
+        "when": "editorLangId == markdown"
+      }
+    ],
+    "menus": {
+      "editor/title": [
+        {
+          "command": "markleon.showPreview",
+          "when": "editorLangId == markdown",
+          "group": "navigation"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "build": "node esbuild.mjs",
+    "watch": "node esbuild.mjs --watch",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write \"src/**/*.{ts,js,json,md,css}\"",
+    "format:check": "prettier --check \"src/**/*.{ts,js,json,md,css}\"",
+    "package": "pnpm run build && pnpm dlx @vscode/vsce package --no-dependencies",
+    "vscode:prepublish": "node esbuild.mjs --production"
+  },
+  "dependencies": {
+    "markdown-it": "^14.0.0",
+    "markdown-it-container": "^4.0.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/markdown-it": "^14.0.0",
+    "@types/node": "^22.0.0",
+    "@types/vscode": "^1.85.0",
+    "@typescript-eslint/eslint-plugin": "^8.63.0",
+    "@typescript-eslint/parser": "^8.63.0",
+    "@vitest/coverage-v8": "^4.1.10",
+    "esbuild": "^0.25.0",
+    "eslint": "^10.6.0",
+    "eslint-config-prettier": "^10.1.8",
+    "prettier": "^3.9.4",
+    "typescript": "^5.7.0",
+    "vitest": "^4.1.10"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/oharu121/markleon.git"
+  },
+  "bugs": {
+    "url": "https://github.com/oharu121/markleon/issues"
+  },
+  "homepage": "https://github.com/oharu121/markleon#readme",
+  "author": "oharu121 <jefflin1201@gmail.com> (https://github.com/oharu121)"
+}
