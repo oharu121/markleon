@@ -2,7 +2,7 @@
   "name": "markleon",
   "displayName": "Markleon",
   "description": "Live, server-less markdown preview that toggles between blog-provider rendering flavors (Zenn and Qiita).",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "publisher": "oharu121",
   "license": "MIT",
   "main": "./out/extension.js",
