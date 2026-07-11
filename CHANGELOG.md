@@ -1,5 +1,26 @@
 # Changelog
 
+## [0.2.0] - 2026-07-11
+
+### Added
+
+- Automated release-publish workflow triggered on `release: published`, shipping a
+  packaged `.vsix` to the VS Code Marketplace and Open VSX
+- npm Trusted Publishing (OIDC, no stored token, automatic provenance)
+
+### Changed
+
+- Publish workflow rewritten for the pnpm-based extension (real typecheck/lint/test
+  gates, `--frozen-lockfile`)
+- Upgraded to TypeScript 6 and `@types/node` 24 (LTS line); added explicit
+  `"types": ["node", "vscode"]` to tsconfig
+- Dependabot now pins `@types/node` to its major (stays on the Node LTS line)
+
+### Fixed
+
+- Dependabot auto-merge workflow referenced a non-existent `fetch-metadata@v5`
+  (now `@v3`), which failed every Dependabot PR
+
 ## [0.1.1] - 2026-07-07
 
 ### Added

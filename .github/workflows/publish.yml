@@ -1,34 +1,72 @@
-name: Publish to npm
+name: Publish Extension
 
 on:
   release:
-    types: [created]
+    types: [published]
+
+permissions:
+  contents: read
+  id-token: write # npm Trusted Publishing (OIDC) — publish without a stored token
 
 jobs:
   publish:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      id-token: write
-
     steps:
       - name: Checkout
         uses: actions/checkout@v7
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
 
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
           node-version: '24.x'
-          registry-url: 'https://registry.npmjs.org'
-          cache: 'npm'
+          cache: 'pnpm'
 
-      - name: Install Dependencies
-        run: npm ci
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
 
-      - name: Run Tests
-        run: npm run test:all
+      - name: Type check
+        run: pnpm run typecheck
 
-      - name: Publish to npm
-        run: npm publish --access public
+      - name: Lint
+        run: pnpm run lint
+
+      - name: Run tests
+        run: pnpm run test
+
+      # Build once (runs vscode:prepublish -> esbuild --production) and package a
+      # single .vsix, then publish the identical artifact to both registries.
+      - name: Package extension
+        run: pnpm dlx @vscode/vsce package --no-dependencies -o markleon.vsix
+
+      - name: Publish to VS Code Marketplace
+        run: pnpm dlx @vscode/vsce publish --no-dependencies --packagePath markleon.vsix
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}
+
+      - name: Publish to Open VSX
+        run: |
+          pnpm dlx ovsx create-namespace oharu121 -p "$OVSX_PAT" || true
+          pnpm dlx ovsx publish markleon.vsix
+        env:
+          OVSX_PAT: ${{ secrets.OVSX_PAT }}
+
+      # npm Trusted Publishing via OIDC — no token (needs id-token: write above and
+      # npm >= 11.5.1). Provenance is attached automatically. Runs last so a hiccup
+      # here can't block the primary Marketplace/Open VSX publish.
+      - name: Publish to npm
+        run: |
+          npm install -g npm@latest
+          npm publish --access public
+
+# ---------------------------------------------------------------------------
+# FUTURE: migrate off PAT before Azure DevOps retires global PATs (2026-12-01).
+# The Entra/OIDC path (azure/login + `vsce publish --azure-credential`) is NOT
+# yet reliably supported from GitHub Actions for personal-account publishers
+# (see microsoft/vscode-vsce#1023). Revisit when Microsoft documents the GitHub
+# Actions flow, or after moving the publisher into an Entra org. An app
+# registration + `release`-scoped federated credential is already set up and
+# ready to switch to when that day comes.
+# ---------------------------------------------------------------------------

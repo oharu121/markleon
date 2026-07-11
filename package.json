@@ -6,6 +6,7 @@
   "publisher": "oharu121",
   "license": "MIT",
   "main": "./out/extension.js",
+  "packageManager": "pnpm@10.21.0",
   "engines": {
     "node": ">=22.0.0",
     "vscode": "^1.85.0"
